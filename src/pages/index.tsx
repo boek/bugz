@@ -80,6 +80,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
   const [priortiy, setPriority] = useState<PrioritySelection>('All');
   const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy))
   const isFenix = product == 'Fenix'
+  const isFocus = product == 'Focus'
   const isGeckoView = product == 'GeckoView'
 
   return (
@@ -92,6 +93,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b to-indigo-50 from-indigo-200 text-indigo-500">
         <div className="p-2 text-xl font-bold">
           <Link className={`p-2 ${isFenix ? 'text-indigo-800' : ''}`} href="/?product=Fenix">Fenix</Link>
+          <Link className={`p-2 ${isFocus ? 'text-indigo-800' : ''}`} href="/?product=Focus">Focus</Link>
           <Link className={`p-2 ${isGeckoView ? 'text-indigo-800' : ''}`} href="/?product=GeckoView">GeckoView</Link>
         </div>
         <div className="flex p-8 font-bold cursor-pointer">
@@ -117,6 +119,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
           className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ priortiy == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
           onClick={() => setPriority('--')}>--</div>
         </div>
+        <h1 className="p-2 text-xl font-bold">{filteredComponents.map(fc => fc.bugs.length).reduce((x, y) => x + y, 0)}</h1>
         <ul className="grid grid-cols-2">
           {filteredComponents.map((fc) => ComponentItem(fc, priortiy))}
         </ul>
