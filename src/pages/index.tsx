@@ -61,7 +61,7 @@ const ComponentItem: React.FC<Component> = ({ name, bugs }: Component) => {
           {[defectSegment, enhancementSegment, taskSegment].filter((x) => x.count > 0).map((segment) => {
             const style = { width: `${segment.count / total * 100}%` }
             const className = `bg-${segment.color}-400 h-2.5 last:rounded-r-full first:rounded-l-full shadow-sm shadow-${segment.color}-400/50`
-            return (<div className={className} style={style}></div>)
+            return (<div key={segment.color} className={className} style={style}></div>)
           })}
         </div>
       </div>
@@ -124,11 +124,15 @@ async function getBugs(component: string): Promise<Component> {
   }
 }
 
+type CName = {
+  name: string
+}
+
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (context) => {
   const res = await fetch('https://bugzilla.mozilla.org/rest/product?names=fenix')
   const components = await res.json()
-  const cnames: string[] = components.products[0].components.map(c => c.name)
-  const data = await Promise.all(cnames.map(getBugs))
+  const cnames: CName[] = components.products[0].components
+  const data = await Promise.all(cnames.map((c) => c.name).map(getBugs))
   return {
     props: {
       components: data
