@@ -1,7 +1,7 @@
 import { type NextPage, GetServerSideProps } from "next";
 import Head from "next/head";
 import { useState } from 'react';
-// import Link from "next/link";
+import Link from "next/link";
 
 type BugType = 'defect' | 'enhancement' | 'task'
 type Status = 'UNCONFIRMED' | 'NEW' | 'ASSIGNED' | 'RESOLVED'
@@ -91,8 +91,8 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b to-indigo-50 from-indigo-200 text-indigo-500">
         <div className="p-2 text-xl font-bold">
-          <a className={`p-2 ${isFenix ? 'text-indigo-800' : ''}`} href="/?product=Fenix">Fenix</a>
-          <a className={`p-2 ${isGeckoView ? 'text-indigo-800' : ''}`} href="/?product=GeckoView">GeckoView</a>
+          <Link className={`p-2 ${isFenix ? 'text-indigo-800' : ''}`} href="/?product=Fenix">Fenix</Link>
+          <Link className={`p-2 ${isGeckoView ? 'text-indigo-800' : ''}`} href="/?product=GeckoView">GeckoView</Link>
         </div>
         <div className="flex p-8 font-bold cursor-pointer">
           <div
