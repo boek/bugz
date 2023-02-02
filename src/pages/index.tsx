@@ -140,7 +140,7 @@ type CName = {
 }
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (context) => {
-  const product = context.query.product || 'Fenix'
+  const product: string = (context.query.product || 'Fenix') as string
   const res = await fetch(`https://bugzilla.mozilla.org/rest/product?names=${product}`)
   const components = await res.json()
   const cnames: CName[] = components.products[0].components
