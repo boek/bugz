@@ -22,6 +22,7 @@ type Component = {
 }
 
 type HomePageProps = {
+  product: string
   components: Component[]
 }
 
@@ -75,9 +76,12 @@ const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection) =
 
 type PrioritySelection = 'All' | Priority
 
-const Home: NextPage<HomePageProps> = ({ components }: HomePageProps) => {
+const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) => {
   const [priortiy, setPriority] = useState<PrioritySelection>('All');
   const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy))
+  const isFenix = product == 'Fenix'
+  const isGeckoView = product == 'GeckoView'
+
   return (
     <>
       <Head>
@@ -86,6 +90,10 @@ const Home: NextPage<HomePageProps> = ({ components }: HomePageProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b to-indigo-50 from-indigo-200 text-indigo-500">
+        <div className="p-2 text-xl font-bold">
+          <a className={`p-2 ${isFenix ? 'text-indigo-800' : ''}`} href="/?product=Fenix">Fenix</a>
+          <a className={`p-2 ${isGeckoView ? 'text-indigo-800' : ''}`} href="/?product=GeckoView">GeckoView</a>
+        </div>
         <div className="flex p-8 font-bold cursor-pointer">
           <div
           className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ priortiy == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
@@ -132,12 +140,14 @@ type CName = {
 }
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (context) => {
-  const res = await fetch('https://bugzilla.mozilla.org/rest/product?names=fenix')
+  const product = context.query.product || 'Fenix'
+  const res = await fetch(`https://bugzilla.mozilla.org/rest/product?names=${product}`)
   const components = await res.json()
   const cnames: CName[] = components.products[0].components
   const data = await Promise.all(cnames.map((c) => c.name).map(getBugs))
   return {
     props: {
+      product: product,
       components: data
     }
   }
