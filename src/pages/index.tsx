@@ -32,7 +32,7 @@ const withBugsFiltered = (component : Component, priority : PrioritySelection) =
   }
 }
 
-const ComponentItem: React.FC<Component> = ({ name, bugs }: Component) => {
+const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection) => {
   const total = bugs.length
 
   const defectSegment = {
@@ -48,10 +48,13 @@ const ComponentItem: React.FC<Component> = ({ name, bugs }: Component) => {
     count: bugs.filter(b => b.type == 'task').length
   }
 
+  const url = `https://bugzilla.mozilla.org/buglist.cgi?product=Fenix&component=${name}&resolution=---&list_id=16395189${priority == 'All' ? '': '&priority=' + priority}`
+
   return (
-    <div
+    <a
       key={name}
-      className="p-2 bg-white/25 backdrop-blur-sm border border-white/20 rounded-lg m-2 shadow-sm"
+      className="p-2 bg-white/25 backdrop-blur-sm border border-white/20 rounded-lg m-2 shadow-sm cursor-pointer"
+      href={url}
     >
       <span className="font-mono text-xl">{name}</span>
 
@@ -65,7 +68,7 @@ const ComponentItem: React.FC<Component> = ({ name, bugs }: Component) => {
           })}
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -107,7 +110,7 @@ const Home: NextPage<HomePageProps> = ({ components }: HomePageProps) => {
           onClick={() => setPriority('--')}>--</div>
         </div>
         <ul className="grid grid-cols-2">
-          {filteredComponents.map(ComponentItem)}
+          {filteredComponents.map((fc) => ComponentItem(fc, priortiy))}
         </ul>
       </main>
     </>
