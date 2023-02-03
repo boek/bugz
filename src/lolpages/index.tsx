@@ -82,7 +82,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
   const isFenix = product == 'Fenix'
   const isFocus = product == 'Focus'
   const isGeckoView = product == 'GeckoView'
-
+  console.log(filteredComponents.map(fc => fc.bugs.length))
   return (
     <>
       <Head>
