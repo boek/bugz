@@ -10,3 +10,5 @@ export type Bug = {
 	priority: Priority
 	severity: Severity
 }
+
+export type Bugs = Bug[]

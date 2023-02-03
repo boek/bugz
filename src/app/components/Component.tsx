@@ -5,4 +5,6 @@ type Component = {
 	bugs: Bug[]
 }
 
+export type Components = Component[]
+
 export default Component;
