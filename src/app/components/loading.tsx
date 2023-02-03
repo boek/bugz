@@ -1,6 +1,5 @@
 export const Loading = () => (
 	<div>
-		<h1>Total</h1>
 		<ul className="grid grid-cols-2">
 			{[...Array(20)].map((_, i) => <CardSkeleton key={i} />)}
 		</ul>
