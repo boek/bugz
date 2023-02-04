@@ -1,10 +1,9 @@
-import { Bugs } from './Bug'
-import { Components } from './Component'
+import { Bugs, Components } from './types'
 
 export const fetchComponents = async (product: string) => {
 	const res = await (await fetch(`https://bugzilla.mozilla.org/rest/product?names=${product}`)).json()
 	const components: Components = res.products[0].components
-	console.log("foo", components)
+
 	return components
 }
 

@@ -1,15 +1,17 @@
 import { fetchBugs } from './service'
-import { Components } from './Component'
+import { Bugs, Components } from './types'
+
+import PriorityBugCounter from './PriorityBugCounter'
 
 type Props = {
 	components: Components
 }
 
 const BugCounter = async ({ components }: Props) => {
-	const bugs = await Promise.all(components.map(c => fetchBugs(c.name)))
-	const total = bugs.reduce((total, bugs) => total + bugs.length, 0)
+	const bugs = (await Promise.all<Bugs>(components.map(c => fetchBugs(c.name)))).flat()
+	// const total = bugs.reduce((total, bugs) => total + bugs.length, 0)
 	return (
-		<span>Total: {total}</span>
+		<PriorityBugCounter bugs={bugs} />
 	)
 }
 

@@ -13,6 +13,7 @@ export default function RootLayout({ children }: Props) {
 					<nav>
 						<Link href="/">Triage</Link>
 						<Link href="/components">Components</Link>
+						<Link href="/sprint">Sprint</Link>
 					</nav>
 					{children}
 				</main>

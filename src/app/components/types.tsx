@@ -12,3 +12,10 @@ export type Bug = {
 }
 
 export type Bugs = Bug[]
+
+export type Component = {
+	name: string
+	bugs: Bug[]
+}
+
+export type Components = Component[]
