@@ -13,6 +13,6 @@ export default function PriorityBugCounter({ bugs }: Props) {
 	const sortedPriorities = useMemo(() => bugs.filter((b) => priority == 'All' ? true : b.priority == priority), [priority])
 
 	return (
-		<span>Total: {sortedPriorities.length}</span>
+		<span className="text-7xl font-bold p-8">{sortedPriorities.length}</span>
 	)
 }

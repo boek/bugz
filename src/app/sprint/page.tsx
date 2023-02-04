@@ -1,5 +1,9 @@
+import BugList from "./BugList"
 const Page = async () => (
-	<h1>Sprint</h1>
+	<div>
+		<h1>Sprint</h1>
+		<BugList />
+	</div>
 )
 
 export default Page
