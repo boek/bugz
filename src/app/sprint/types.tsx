@@ -7,6 +7,7 @@ export type Bug = {
 	priority: Priority
 	summary: string
 	whiteboard: string
+	assigned_to?: string
 }
 
 export type Bugs = Bug[]

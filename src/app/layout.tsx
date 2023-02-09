@@ -9,7 +9,7 @@ export default function RootLayout({ children }: Props) {
 	return (
 		<html lang="en">
 			<body>
-				<main className="flex min-h-screen flex-col items-center bg-gradient-to-b to-indigo-50 from-indigo-200 text-indigo-500">
+				<main className="flex flex-col w-screen h-screen overflow-auto text-gray-700 bg-gradient-to-tr from-sky-200 via-blue-200 to-orange-200">
 					<nav>
 						<Link href="/">Triage</Link>
 						<Link href="/components">Components</Link>
