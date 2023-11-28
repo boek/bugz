@@ -18,6 +18,7 @@ type Bug = {
 
 type Component = {
   name: string
+  percent: number,
   bugs: Bug[]
 }
 
@@ -26,9 +27,10 @@ type HomePageProps = {
   components: Component[]
 }
 
-const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection) => {
+const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection, largest : number) => {
   return {
     name: component.name,
+    percent: getLogarithmicPercentage(component.bugs.length, largest),
     bugs: component.bugs.filter((b) => { 
       return (priority == 'All' ? true : b.priority == priority)
       && (severity == 'All' ? true : b.severity == severity)
@@ -37,7 +39,26 @@ const withBugsFiltered = (component : Component, priority : PrioritySelection, s
   }
 }
 
-const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection) => {
+function getLogarithmicPercentage(value : number, maxValue : number) {
+  // Ensure value and maxValue are within the valid range
+  value = Math.max(0, value);
+  maxValue = Math.max(0, maxValue);
+
+  // Calculate the logarithmic scale
+  const logScale = Math.log(value + 1) / Math.log(10);
+  const maxLogScale = Math.log(maxValue + 1) / Math.log(10);
+
+  // Normalize the scale between 0 and 1
+  const normalizedScale = logScale / maxLogScale;
+
+  // Map the normalized scale to a percentage (0 to 100)
+  const percentage = normalizedScale * 100;
+  console.log(percentage)
+  return percentage;
+}
+
+
+const ComponentItem = ({ name, percent, bugs }: Component, priority: PrioritySelection, severity: SeveritySelection, bugType: BugTypeSelection) => {
   const total = bugs.length
 
   const defectSegment = {
@@ -53,19 +74,23 @@ const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection) =
     count: bugs.filter(b => b.type == 'task').length
   }
 
-  const url = `https://bugzilla.mozilla.org/buglist.cgi?product=Fenix&component=${name}&resolution=---&list_id=16395189${priority == 'All' ? '': '&priority=' + priority}`
-
+  const url = `https://bugzilla.mozilla.org/buglist.cgi?product=Fenix&component=${name}&resolution=---&list_id=16395189${priority == 'All' ? '': '&priority=' + priority}${severity == 'All' ? '' : '&bug_severity=' + severity}${bugType == 'All' ? '' : '&bug_type=' + bugType}`
+  const style = {
+    width: `${percent}%`
+  }
   return (
     <a
       key={name}
       className="p-2 bg-white/25 backdrop-blur-sm border border-white/20 rounded-lg m-2 shadow-sm cursor-pointer"
+      target="_blank"
+      rel="noreferrer"
       href={url}
     >
       <span className="font-mono text-xl">{name}</span>
 
       <div className="flex items-center">
         <span className="text-xs pr-2 font-mono">{bugs.length}</span>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 shadow-gray-400/50 flex">
+        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 shadow-gray-400/50 flex" style={style}>
           {[defectSegment, enhancementSegment, taskSegment].filter((x) => x.count > 0).map((segment) => {
             const style = { width: `${segment.count / total * 100}%` }
             const className = `bg-${segment.color}-400 h-2.5 last:rounded-r-full first:rounded-l-full shadow-sm shadow-${segment.color}-400/50`
@@ -86,7 +111,9 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
   const [priortiy, setPriority] = useState<PrioritySelection>('All');
   const [severity, setSeverity] = useState<SeveritySelection>('All');
   const [bugType, setBugType] = useState<BugTypeSelection>('All');
-  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy, severity, bugType))
+  const largest = components.reduce(
+    (acc, c) => acc > c.bugs.length ? acc : c.bugs.length, 0)
+  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy, severity, bugType, largest))
   const isFenix = product == 'Fenix'
   const isFocus = product == 'Focus'
   const isGeckoView = product == 'GeckoView'
@@ -150,19 +177,19 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
             className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ bugType == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
             onClick={() => setBugType('All')}>All</div>
             <div
-            className={`border-indigo-800 border-y-4 p-2 ${ bugType == 'defect' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            className={`border-indigo-800 border-y-4 p-2 ${ bugType == 'defect' ? 'bg-rose-500 text-white' : 'hover:bg-rose-500 hover:text-white text-rose-500' }`}
             onClick={() => setBugType('defect')}>Defect</div>
             <div
-            className={`border-indigo-800 border-y-4 p-2 ${ bugType == 'enhancement' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            className={`border-indigo-800 border-y-4 p-2 ${ bugType == 'enhancement' ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500 hover:text-white text-emerald-500' }`}
             onClick={() => setBugType('enhancement')}>Enhancement</div>
             <div
-            className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ bugType == 'task' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ bugType == 'task' ? 'bg-sky-500 text-white' : 'hover:bg-sky-500 hover:text-white text-sky-500' }`}
             onClick={() => setBugType('task')}>Task</div>
           </div>
         </div>
         <h1 className="p-2 text-xl font-bold">{filteredComponents.map(fc => fc.bugs.length).reduce((x, y) => x + y, 0)}</h1>
         <ul className="grid grid-cols-2">
-          {filteredComponents.map((fc) => ComponentItem(fc, priortiy))}
+          {filteredComponents.map((fc) => ComponentItem(fc, priortiy, severity, bugType))}
         </ul>
       </main>
     </>
@@ -175,6 +202,7 @@ async function getBugs(component: string): Promise<Component> {
 
   return {
     name: component,
+    percent: 0,
     bugs: bugs
   }
 }
