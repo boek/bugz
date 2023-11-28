@@ -6,7 +6,7 @@ import Link from "next/link";
 type BugType = 'defect' | 'enhancement' | 'task'
 type Status = 'UNCONFIRMED' | 'NEW' | 'ASSIGNED' | 'RESOLVED'
 type Priority = 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | '--'
-type Severity = 'S1' | 'S2' | 'S3' | 'S4'
+type Severity = 'S1' | 'S2' | 'S3' | 'S4' | '--'
 
 type Bug = {
   id: number
@@ -26,10 +26,10 @@ type HomePageProps = {
   components: Component[]
 }
 
-const withBugsFiltered = (component : Component, priority : PrioritySelection) => {
+const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection) => {
   return {
     name: component.name,
-    bugs: component.bugs.filter((b) => priority == 'All' ? true : b.priority == priority)
+    bugs: component.bugs.filter((b) => (priority == 'All' ? true : b.priority == priority) && (severity == 'All' ? true : b.severity == severity))
   }
 }
 
@@ -75,10 +75,12 @@ const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection) =
 
 
 type PrioritySelection = 'All' | Priority
+type SeveritySelection = 'All' | Severity
 
 const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) => {
   const [priortiy, setPriority] = useState<PrioritySelection>('All');
-  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy))
+  const [severity, setSeverity] = useState<SeveritySelection>('All');
+  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy, severity))
   const isFenix = product == 'Fenix'
   const isFocus = product == 'Focus'
   const isGeckoView = product == 'GeckoView'
@@ -96,28 +98,47 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
           <Link className={`p-2 ${isFocus ? 'text-indigo-800' : ''}`} href="/?product=Focus">Focus</Link>
           <Link className={`p-2 ${isGeckoView ? 'text-indigo-800' : ''}`} href="/?product=GeckoView">GeckoView</Link>
         </div>
-        <div className="flex p-8 font-bold cursor-pointer">
-          <div
-          className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ priortiy == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('All')}>All</div>
-          <div
-          className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P1' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('P1')}>P1</div>
-          <div
-          className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P2' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('P2')}>P2</div>
-          <div
-          className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P3' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('P3')}>P3</div>
-          <div
-          className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P4' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('P4')}>P4</div>
-          <div
-          className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P5' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('P5')}>P5</div>
-          <div
-          className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ priortiy == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
-          onClick={() => setPriority('--')}>--</div>
+        <div className="grid grid-cols-2">
+          <div className="flex p-8 font-bold cursor-pointer">
+            <div
+            className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ priortiy == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('All')}>All</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P1' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('P1')}>P1</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P2' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('P2')}>P2</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P3' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('P3')}>P3</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P4' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('P4')}>P4</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ priortiy == 'P5' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('P5')}>P5</div>
+            <div
+            className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ priortiy == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setPriority('--')}>--</div>
+          </div>
+          <div className="flex p-8 font-bold cursor-pointer">
+            <div
+            className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ severity == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setSeverity('All')}>All</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ severity == 'S1' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setSeverity('S1')}>S1</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ severity == 'S2' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setSeverity('S2')}>S2</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ severity == 'S3' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setSeverity('S3')}>S3</div>
+            <div
+            className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ severity == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setSeverity('--')}>--</div>
+          </div>
         </div>
         <h1 className="p-2 text-xl font-bold">{filteredComponents.map(fc => fc.bugs.length).reduce((x, y) => x + y, 0)}</h1>
         <ul className="grid grid-cols-2">
