@@ -18,7 +18,6 @@ type Bug = {
 
 type Component = {
   name: string
-  percent: number,
   bugs: Bug[]
 }
 
@@ -27,10 +26,9 @@ type HomePageProps = {
   components: Component[]
 }
 
-const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection, largest : number) => {
+const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection) => {
   return {
     name: component.name,
-    percent: getLogarithmicPercentage(component.bugs.length, largest),
     bugs: component.bugs.filter((b) => { 
       return (priority == 'All' ? true : b.priority == priority)
       && (severity == 'All' ? true : b.severity == severity)
@@ -53,13 +51,13 @@ function getLogarithmicPercentage(value : number, maxValue : number) {
 
   // Map the normalized scale to a percentage (0 to 100)
   const percentage = normalizedScale * 100;
-  console.log(percentage)
   return percentage;
 }
 
 
-const ComponentItem = ({ name, percent, bugs }: Component, priority: PrioritySelection, severity: SeveritySelection, bugType: BugTypeSelection) => {
+const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection, severity: SeveritySelection, bugType: BugTypeSelection, largest: number) => {
   const total = bugs.length
+  const percent = getLogarithmicPercentage(total, largest)
 
   const defectSegment = {
     color: 'rose',
@@ -111,9 +109,9 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
   const [priortiy, setPriority] = useState<PrioritySelection>('All');
   const [severity, setSeverity] = useState<SeveritySelection>('All');
   const [bugType, setBugType] = useState<BugTypeSelection>('All');
-  const largest = components.reduce(
+  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy, severity, bugType))
+  const largest = filteredComponents.reduce(
     (acc, c) => acc > c.bugs.length ? acc : c.bugs.length, 0)
-  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy, severity, bugType, largest))
   const isFenix = product == 'Fenix'
   const isFocus = product == 'Focus'
   const isGeckoView = product == 'GeckoView'
@@ -189,7 +187,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
         </div>
         <h1 className="p-2 text-xl font-bold">{filteredComponents.map(fc => fc.bugs.length).reduce((x, y) => x + y, 0)}</h1>
         <ul className="grid grid-cols-2">
-          {filteredComponents.map((fc) => ComponentItem(fc, priortiy, severity, bugType))}
+          {filteredComponents.map((fc) => ComponentItem(fc, priortiy, severity, bugType, largest))}
         </ul>
       </main>
     </>
@@ -202,7 +200,6 @@ async function getBugs(component: string): Promise<Component> {
 
   return {
     name: component,
-    percent: 0,
     bugs: bugs
   }
 }
