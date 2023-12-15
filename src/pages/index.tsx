@@ -55,7 +55,7 @@ function getLogarithmicPercentage(value : number, maxValue : number) {
 }
 
 
-const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection, severity: SeveritySelection, bugType: BugTypeSelection, largest: number) => {
+const ComponentItem = (product : string, { name, bugs }: Component, priority: PrioritySelection, severity: SeveritySelection, bugType: BugTypeSelection, largest: number) => {
   const total = bugs.length
   const percent = getLogarithmicPercentage(total, largest)
 
@@ -72,7 +72,7 @@ const ComponentItem = ({ name, bugs }: Component, priority: PrioritySelection, s
     count: bugs.filter(b => b.type == 'task').length
   }
 
-  const url = `https://bugzilla.mozilla.org/buglist.cgi?product=Fenix&component=${name}&resolution=---&list_id=16395189${priority == 'All' ? '': '&priority=' + priority}${severity == 'All' ? '' : '&bug_severity=' + severity}${bugType == 'All' ? '' : '&bug_type=' + bugType}`
+  const url = `https://bugzilla.mozilla.org/buglist.cgi?product=${product}&component=${name}&resolution=---&list_id=16395189${priority == 'All' ? '': '&priority=' + priority}${severity == 'All' ? '' : '&bug_severity=' + severity}${bugType == 'All' ? '' : '&bug_type=' + bugType}`
   const style = {
     width: `${percent}%`
   }
@@ -187,15 +187,15 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
         </div>
         <h1 className="p-2 text-xl font-bold">{filteredComponents.map(fc => fc.bugs.length).reduce((x, y) => x + y, 0)}</h1>
         <ul className="grid grid-cols-2">
-          {filteredComponents.map((fc) => ComponentItem(fc, priortiy, severity, bugType, largest))}
+          {filteredComponents.map((fc) => ComponentItem(product, fc, priortiy, severity, bugType, largest))}
         </ul>
       </main>
     </>
   );
 };
 
-async function getBugs(component: string): Promise<Component> {
-  const res = await fetch(`https://bugzilla.mozilla.org/rest/bug?include_fields=id,summary,status,type,severity,priority&component=${component}&product=Fenix&resolution=---`)
+async function getBugs(product: string, component: string): Promise<Component> {
+  const res = await fetch(`https://bugzilla.mozilla.org/rest/bug?include_fields=id,summary,status,type,severity,priority&component=${component}&product=${product}&resolution=---`)
   const bugs: Bug[] = (await res.json()).bugs
 
   return {
@@ -213,7 +213,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
   const res = await fetch(`https://bugzilla.mozilla.org/rest/product?names=${product}`)
   const components = await res.json()
   const cnames: CName[] = components.products[0].components
-  const data = await Promise.all(cnames.map((c) => c.name).map(getBugs))
+  const data = await Promise.all(cnames.map((c) => c.name).map((c) => getBugs(product, c)))
   return {
     props: {
       product: product,
