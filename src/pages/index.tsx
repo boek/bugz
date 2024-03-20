@@ -7,6 +7,7 @@ type BugType = 'defect' | 'enhancement' | 'task'
 type Status = 'UNCONFIRMED' | 'NEW' | 'ASSIGNED' | 'RESOLVED'
 type Priority = 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | '--'
 type Severity = 'S1' | 'S2' | 'S3' | 'S4' | '--'
+type Group = '1' | '2' | '3' | '4' | '--'
 
 type Bug = {
   id: number
@@ -26,6 +27,13 @@ type HomePageProps = {
   components: Component[]
 }
 
+const groupComponents = {
+  '1' : ['Browser Engine', 'Autofill', 'Accounts and Sync', 'Logins', 'Bookmarks', 'Push', 'PWA'],
+  '2': ['Homepage', 'Pocket', 'Collections', 'Top Sites', 'WebExtensions', 'Onboarding'],
+  '3': ['Search', 'Toolbar', 'QR', 'Share', 'App Links', 'Translations'],
+  '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'WebAuthn', 'Shopping']
+}
+
 const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection) => {
   return {
     name: component.name,
@@ -35,6 +43,18 @@ const withBugsFiltered = (component : Component, priority : PrioritySelection, s
       && (bugType == 'All' ? true : b.type == bugType)
     })
   }
+}
+
+const withGroupFiltered = (component : Component, group: GroupSelection) => {
+  if (group == 'All') { return true }
+  if (group == '--') {
+    return !groupComponents['1'].includes(component.name)
+    && !groupComponents['2'].includes(component.name)
+    && !groupComponents['3'].includes(component.name)
+    && !groupComponents['4'].includes(component.name)
+  }
+
+  return groupComponents[group].includes(component.name)
 }
 
 function getLogarithmicPercentage(value : number, maxValue : number) {
@@ -104,12 +124,15 @@ const ComponentItem = (product : string, { name, bugs }: Component, priority: Pr
 type PrioritySelection = 'All' | Priority
 type SeveritySelection = 'All' | Severity
 type BugTypeSelection = 'All' | BugType
+type GroupSelection = 'All' | Group
 
 const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) => {
   const [priortiy, setPriority] = useState<PrioritySelection>('All');
   const [severity, setSeverity] = useState<SeveritySelection>('All');
   const [bugType, setBugType] = useState<BugTypeSelection>('All');
-  const filteredComponents = components.map((c) => withBugsFiltered(c, priortiy, severity, bugType))
+  const [group, setGroup] = useState<GroupSelection>('All');
+
+  const filteredComponents = components.filter((c) => withGroupFiltered(c, group)).map((c) => withBugsFiltered(c, priortiy, severity, bugType))
   const largest = filteredComponents.reduce(
     (acc, c) => acc > c.bugs.length ? acc : c.bugs.length, 0)
   const isFenix = product == 'Fenix'
@@ -183,6 +206,26 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
             <div
             className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ bugType == 'task' ? 'bg-sky-500 text-white' : 'hover:bg-sky-500 hover:text-white text-sky-500' }`}
             onClick={() => setBugType('task')}>Task</div>
+          </div>
+          <div className="flex font-bold cursor-pointer">
+            <div
+            className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ group == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
+            onClick={() => setGroup('All')}>All</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ group == '1' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+            onClick={() => setGroup('1')}>1</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ group == '2' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+            onClick={() => setGroup('2')}>2</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ group == '3' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+            onClick={() => setGroup('3')}>3</div>
+            <div
+            className={`border-indigo-800 border-y-4 p-2 ${ group == '4' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+            onClick={() => setGroup('4')}>4</div>
+            <div
+            className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ group == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+            onClick={() => setGroup('--')}>--</div>
           </div>
         </div>
         <h1 className="p-2 text-xl font-bold">{filteredComponents.map(fc => fc.bugs.length).reduce((x, y) => x + y, 0)}</h1>
