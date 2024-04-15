@@ -28,10 +28,10 @@ type HomePageProps = {
 }
 
 const groupComponents = {
-  '1' : ['Browser Engine', 'Autofill', 'Accounts and Sync', 'Logins', 'Bookmarks', 'Push', 'PWA'],
+  '1' : ['Browser Engine', 'Autofill', 'Accounts and Sync', 'Logins', 'Bookmarks', 'Push', 'PWA', 'WebAuthn'],
   '2': ['Homepage', 'Pocket', 'Collections', 'Top Sites', 'WebExtensions', 'Onboarding'],
   '3': ['Search', 'Toolbar', 'QR', 'Share', 'App Links', 'Translations'],
-  '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'WebAuthn', 'Shopping']
+  '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'Shopping', 'Media']
 }
 
 const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection) => {
