@@ -135,7 +135,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
   const filteredComponents = components.filter((c) => withGroupFiltered(c, group)).map((c) => withBugsFiltered(c, priortiy, severity, bugType))
   const largest = filteredComponents.reduce(
     (acc, c) => acc > c.bugs.length ? acc : c.bugs.length, 0)
-  const isFenix = product == 'Fenix'
+  const isFenix = product == 'Firefox for Android'
   const isFocus = product == 'Focus'
   const isGeckoView = product == 'GeckoView'
 
@@ -252,7 +252,7 @@ type CName = {
 }
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (context) => {
-  const product: string = (context.query.product || 'Fenix') as string
+  const product: string = (context.query.product || 'Firefox for Android') as string
   const res = await fetch(`https://bugzilla.mozilla.org/rest/product?names=${product}`)
   const components = await res.json()
   const cnames: CName[] = components.products[0].components
