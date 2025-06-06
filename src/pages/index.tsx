@@ -29,7 +29,7 @@ type HomePageProps = {
 
 const groupComponents = {
   '1' : ['Browser Engine', 'Autofill', 'Accounts and Sync', 'Logins', 'Bookmarks', 'Push', 'PWA', 'WebAuthn'],
-  '2': ['Homepage', 'Pocket', 'Collections', 'Top Sites', 'WebExtensions', 'Onboarding'],
+  '2': [ 'WebExtensions', 'Onboarding'],
   '3': ['Search', 'Toolbar', 'QR', 'Share', 'App Links', 'Translations'],
   '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'Shopping', 'Media'],
   '5': ['Collections', 'Homepage', 'Top Sites'],
