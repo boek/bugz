@@ -7,7 +7,7 @@ type BugType = 'defect' | 'enhancement' | 'task'
 type Status = 'UNCONFIRMED' | 'NEW' | 'ASSIGNED' | 'RESOLVED'
 type Priority = 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | '--'
 type Severity = 'S1' | 'S2' | 'S3' | 'S4' | '--'
-type Group = '1' | '2' | '3' | '4' | '--'
+type Group = '1' | '2' | '3' | '4' | '5' | '--'
 
 type Bug = {
   id: number
@@ -29,9 +29,10 @@ type HomePageProps = {
 
 const groupComponents = {
   '1' : ['Browser Engine', 'Autofill', 'Accounts and Sync', 'Logins', 'Bookmarks', 'Push', 'PWA', 'WebAuthn'],
-  '2': ['Homepage', 'Pocket', 'Collections', 'Top Sites', 'WebExtensions', 'Onboarding'],
+  '2': [ 'WebExtensions', 'Onboarding'],
   '3': ['Search', 'Toolbar', 'QR', 'Share', 'App Links', 'Translations'],
-  '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'Shopping', 'Media']
+  '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'Shopping', 'Media'],
+  '5': ['Collections', 'Homepage', 'Top Sites'],
 }
 
 const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection) => {
@@ -52,6 +53,7 @@ const withGroupFiltered = (component : Component, group: GroupSelection) => {
     && !groupComponents['2'].includes(component.name)
     && !groupComponents['3'].includes(component.name)
     && !groupComponents['4'].includes(component.name)
+    && !groupComponents['5'].includes(component.name)
   }
 
   return groupComponents[group].includes(component.name)
@@ -223,6 +225,9 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
             <div
             className={`border-indigo-800 border-y-4 p-2 ${ group == '4' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
             onClick={() => setGroup('4')}>4</div>
+            <div 
+            className={`border-indigo-800 border-y-4 p-2 ${ group == '5' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+            onClick={() => setGroup('5')}>5</div>
             <div
             className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ group == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
             onClick={() => setGroup('--')}>--</div>
