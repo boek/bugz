@@ -7,7 +7,8 @@ type BugType = 'defect' | 'enhancement' | 'task'
 type Status = 'UNCONFIRMED' | 'NEW' | 'ASSIGNED' | 'RESOLVED'
 type Priority = 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | '--'
 type Severity = 'S1' | 'S2' | 'S3' | 'S4' | '--'
-type Group = '1' | '2' | '3' | '4' | '5' | '--'
+type Team = 'core' | 'discovery' | 'activation' | 'foundations'
+type Group = Team | '--'
 
 type Bug = {
   id: number
@@ -27,12 +28,18 @@ type HomePageProps = {
   components: Component[]
 }
 
-const groupComponents = {
-  '1' : ['Browser Engine', 'Autofill', 'Accounts and Sync', 'Logins', 'Bookmarks', 'Push', 'PWA', 'WebAuthn'],
-  '2': [ 'WebExtensions', 'Onboarding'],
-  '3': ['Search', 'Toolbar', 'QR', 'Share', 'App Links', 'Translations'],
-  '4': ['Tabs', 'Privacy', 'Downloads', 'History', 'Shopping', 'Media'],
-  '5': ['Collections', 'Homepage', 'Top Sites'],
+const teams: { id: Team, name: string }[] = [
+  { id: 'core', name: 'Core Browser Experience' },
+  { id: 'discovery', name: 'Discovery & Engagement' },
+  { id: 'activation', name: 'Activation & Trust' },
+  { id: 'foundations', name: 'Android Tech Foundations' },
+]
+
+const groupComponents: Record<Team, string[]> = {
+  'core': ['Toolbar', 'Menu', 'Bookmarks', 'History', 'Settings', 'Tabs', 'Downloads', 'Reader Mode', 'Contextual AI'],
+  'discovery': ['Homepage', 'Search', 'Stories', 'Top Sites', 'Collections'],
+  'activation': ['Onboarding', 'Accounts and Sync', 'Autofill', 'Logins', 'WebAuthn', 'Privacy', 'WebExtensions', 'Extensions', 'App Links', 'Share', 'Experimentation and Telemetry'],
+  'foundations': ['Browser Engine', 'Performance', 'Crash Reporting', 'Media', 'IME', 'PDF Viewer', 'Tooling', 'UI Tests'],
 }
 
 const withBugsFiltered = (component : Component, priority : PrioritySelection, severity : SeveritySelection, bugType : BugTypeSelection) => {
@@ -49,11 +56,7 @@ const withBugsFiltered = (component : Component, priority : PrioritySelection, s
 const withGroupFiltered = (component : Component, group: GroupSelection) => {
   if (group == 'All') { return true }
   if (group == '--') {
-    return !groupComponents['1'].includes(component.name)
-    && !groupComponents['2'].includes(component.name)
-    && !groupComponents['3'].includes(component.name)
-    && !groupComponents['4'].includes(component.name)
-    && !groupComponents['5'].includes(component.name)
+    return !Object.values(groupComponents).some((names) => names.includes(component.name))
   }
 
   return groupComponents[group].includes(component.name)
@@ -213,21 +216,12 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
             <div
             className={`border-indigo-800 border-y-4 border-l-4 rounded-l p-2 ${ group == 'All' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-500 hover:text-white' }`}
             onClick={() => setGroup('All')}>All</div>
-            <div
-            className={`border-indigo-800 border-y-4 p-2 ${ group == '1' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
-            onClick={() => setGroup('1')}>1</div>
-            <div
-            className={`border-indigo-800 border-y-4 p-2 ${ group == '2' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
-            onClick={() => setGroup('2')}>2</div>
-            <div
-            className={`border-indigo-800 border-y-4 p-2 ${ group == '3' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
-            onClick={() => setGroup('3')}>3</div>
-            <div
-            className={`border-indigo-800 border-y-4 p-2 ${ group == '4' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
-            onClick={() => setGroup('4')}>4</div>
-            <div 
-            className={`border-indigo-800 border-y-4 p-2 ${ group == '5' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
-            onClick={() => setGroup('5')}>5</div>
+            {teams.map((team) => (
+              <div
+              key={team.id}
+              className={`border-indigo-800 border-y-4 p-2 ${ group == team.id ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
+              onClick={() => setGroup(team.id)}>{team.name}</div>
+            ))}
             <div
             className={`border-indigo-800 border-y-4 border-r-4 rounded-r p-2 ${ group == '--' ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 hover:text-white' }`}
             onClick={() => setGroup('--')}>--</div>
