@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Bug-type series colors (validated for CVD separation on both surfaces). */
+:root {
+  color-scheme: light;
+  --series-defect: #2a78d6;
+  --series-enhancement: #eb6834;
+  --series-task: #1baf7a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --series-defect: #3987e5;
+    --series-enhancement: #d95926;
+    --series-task: #199e70;
+  }
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
