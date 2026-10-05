@@ -310,7 +310,7 @@ const Home: NextPage<HomePageProps> = ({ product, components }: HomePageProps) =
   return (
     <>
       <Head>
-        <title>{`bugz · ${product}`}</title>
+        <title>{`bugz - ${product}`}</title>
         <meta name="description" content="Fenix bugz" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
