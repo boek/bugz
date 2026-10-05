@@ -149,14 +149,14 @@ const StatTile = ({ label, value, detail, color }: { label: string, value: numbe
   </div>
 )
 
-const TeamBadge = ({ name }: { name: string }) => {
+const TeamBadge = ({ name, subtle = false }: { name: string, subtle?: boolean }) => {
   const team = teamFor(name)
   return (
     <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-      team
-        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
-        : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
-    }`}>
+        team
+          ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
+          : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+      } ${subtle ? 'opacity-20 transition-opacity duration-300 ease-in-out motion-reduce:transition-none group-hover/card:opacity-100 group-focus-visible/card:opacity-100' : ''}`}>
       {team ? team.name : 'Unassigned'}
     </span>
   )
@@ -175,7 +175,7 @@ const StackedBar = ({ bugs, largest }: { bugs: Bug[], largest: number }) => {
             style={{ flexGrow: segment.count, flexBasis: 0, minWidth: 2 }}
           >
             <div
-              className={`h-2 w-full ${i == segments.length - 1 ? 'rounded-r' : ''}`}
+              className={`h-2 w-full ${i == 0 ? 'rounded-l' : ''} ${i == segments.length - 1 ? 'rounded-r' : ''}`}
               style={{ background: segment.color }}
             />
             <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-zinc-900 px-2 py-1 text-xs text-white shadow-lg group-hover:block dark:bg-zinc-700">
@@ -198,11 +198,11 @@ const ComponentCard = ({ product, component, filters, largest }: { product: stri
       href={bugzillaUrl(product, name, filters)}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <h2 className="truncate font-semibold text-zinc-900 dark:text-white">{name}</h2>
-          <div className="mt-1"><TeamBadge name={name} /></div>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <h2 className="max-w-full truncate font-semibold text-zinc-900 dark:text-white">{name}</h2>
+          <TeamBadge name={name} subtle />
         </div>
-        <div className="flex items-center gap-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+        <div className="flex shrink-0 items-center gap-1 text-2xl font-semibold text-zinc-900 dark:text-white">
           {bugs.length.toLocaleString()}
           <svg className="h-4 w-4 text-zinc-400 opacity-0 transition group-hover/card:opacity-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
@@ -211,14 +211,6 @@ const ComponentCard = ({ product, component, filters, largest }: { product: stri
         </div>
       </div>
       <StackedBar bugs={bugs} largest={largest} />
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
-        {countByType(bugs).map((t) => (
-          <span key={t.type} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: t.color }} />
-            <span className="tabular-nums text-zinc-700 dark:text-zinc-300">{t.count}</span> {t.plural}
-          </span>
-        ))}
-      </div>
     </a>
   )
 }
